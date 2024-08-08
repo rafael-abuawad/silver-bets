@@ -1,6 +1,5 @@
 import ape
 import random
-from decimal import Decimal
 
 
 def test_initial_values(silver_bet, sender):
@@ -209,7 +208,7 @@ def test_create_bet_participate_and_collect_winnings(silver_bet, fee, sender, ac
         # Truco para quitar la direccion del sender en Anvil
         if sender == account:
             continue
-        
+
         option = random.randint(0, 1)
         bet_amount = random.randint(min_bet, min_bet * 10)
         silver_bet.enterBet(id, option, sender=account, value=bet_amount)
@@ -252,7 +251,7 @@ def test_only_owner_can_collect_fees(silver_bet, sender, fee, accounts):
             silver_bet.collectFees(account, sender=account)
 
 
-def test_owner_can_collect_fees(silver_bet, sender, fee, accounts):
+def test_owner_can_collect_fees(silver_bet, sender, fee):
     """
     Prueba que el owner puede reclamar los fees.
     """
