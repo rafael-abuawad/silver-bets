@@ -278,6 +278,7 @@ contract SilverBet is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable, Reent
                 '"image": "',
                 tokenImage,
                 '",',
+                '"background_color": "030712",'
                 '"attributes": [',
                 _buildTVLAttribute(info.balance),
                 _buildOwnerAttribute(info.owner),
