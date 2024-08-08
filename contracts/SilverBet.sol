@@ -27,12 +27,12 @@ contract SilverBet is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable, Reent
 
     /**
      * @dev Estructura para representar una apuesta.
-     * @param better Dirección del apostador.
+     * @param bettor Dirección del apostador.
      * @param option Opción elegida por el apostador.
      * @param amount Cantidad apostada.
      */
     struct Bet {
-        address better;
+        address bettor;
         Option option;
         uint256 amount;
     }
@@ -167,7 +167,7 @@ contract SilverBet is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable, Reent
             revert SilverBet__IncorrectFeeSend();
         }
         info.balance += msg.value;
-        _tokenIdToBets[tokenId].push(Bet({better: msg.sender, option: option, amount: msg.value}));
+        _tokenIdToBets[tokenId].push(Bet({bettor: msg.sender, option: option, amount: msg.value}));
     }
 
     /**
@@ -176,7 +176,7 @@ contract SilverBet is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable, Reent
      * @param winnerOption Opción ganadora.
      * @return true si la operación se completó con éxito, false en caso contrario.
      */
-    function closeVoting(uint256 tokenId, Option winnerOption)
+    function closeBet(uint256 tokenId, Option winnerOption)
         public
         tokenExists(tokenId)
         onlyBetOwner(tokenId)
@@ -187,13 +187,12 @@ contract SilverBet is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable, Reent
         if (!betInfo.bettingActive) {
             revert SilverBet__BetHasEnded();
         }
-        betInfo.bettingActive = false;
 
         uint256 totalBetAmount = betInfo.balance;
 
         // Calcular y transferir el 1% del total al propietario y al creador
         uint256 fee = totalBetAmount / 100;
-        uint256 remainingAmount = totalBetAmount - 2 * fee;
+        uint256 remainingAmount = totalBetAmount - (2 * fee);
 
         (bool sent,) = betInfo.owner.call{value: fee}("");
         if (!sent) {
@@ -213,13 +212,14 @@ contract SilverBet is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable, Reent
                 uint256 betAmount = bet.amount;
                 uint256 amountToTransfer = (betAmount * remainingAmount) / totalBetAmount;
 
-                (sent,) = payable(bet.better).call{value: amountToTransfer}("");
+                (sent,) = payable(bet.bettor).call{value: amountToTransfer}("");
                 if (!sent) {
                     revert SilverBet__FailedToSendAvax();
                 }
             }
         }
 
+        betInfo.bettingActive = false;
         betInfo.endDate = block.timestamp;
         emit BetResolved(tokenId, winnerOption);
         return true;
@@ -304,7 +304,7 @@ contract SilverBet is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable, Reent
      * @param _to Dirección a la que se enviarán los fondos.
      */
     function collectFees(address payable _to) public payable onlyOwner {
-        (bool sent, bytes memory data) = _to.call{value: msg.value}("");
+        (bool sent, bytes memory data) = _to.call{value: address(this).balance}("");
         if (!sent) {
             revert SilverBet__FailedToSendAvax();
         }
