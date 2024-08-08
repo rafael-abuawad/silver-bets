@@ -138,11 +138,13 @@ contract SilverBet is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable, Reent
 
     /**
      * @dev Función interna para establecer la información de un token.
-     * @param tokenId ID del token.
-     * @param imageURL URL de la imagen que se quiere usar para la apuesta.
+     * @param tokenId ID del token asociado a la nueva apuesta.
      */
-    function _setTokenImage(uint256 tokenId, string memory imageURL) private {
-        _tokenIdToImage[tokenId] = imageURL;
+    function _setTokenImage(uint256 tokenId) private {
+        // Imagenes disponibles para usar
+        string[12] memory images =
+            ["a.png", "b.png", "c.png", "d.png", "e.png", "f.png", "g.png", "h.png", "i.png", "j.png", "k.png", "l.png"];
+        _tokenIdToImage[tokenId] = images[tokenId % images.length];
     }
 
     /**
@@ -164,8 +166,7 @@ contract SilverBet is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable, Reent
 
         uint256 tokenId = _nextTokenId++;
         _safeMint(msg.sender, tokenId);
-        _setTokenURI(tokenId, "");
-        _setTokenImage(tokenId, "demo.png"); // TODO: add image support
+        _setTokenImage(tokenId);
         _setTokenInfo(tokenId, title, description, minimumBet, options);
         return tokenId;
     }
@@ -279,7 +280,9 @@ contract SilverBet is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable, Reent
                 '",',
                 '"attributes": [',
                 _buildTVLAttribute(info.balance),
+                _buildOwnerAttribute(info.owner),
                 _buildStartDateAttribute(info.startDate),
+                _buildEndDateAttribute(info.endDate),
                 _buildBettorsAttribute(betCount),
                 "]",
                 "}"
@@ -288,7 +291,15 @@ contract SilverBet is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable, Reent
     }
 
     function _buildTVLAttribute(uint256 balance) private pure returns (string memory) {
-        return string(abi.encodePacked("{", '"trait_type": "TVL",', '"value": ', Strings.toString(balance), "},"));
+        return string(abi.encodePacked("{", '"trait_type": "Total Value Locked (TVL)",', '"value": ', Strings.toString(balance), "},"));
+    }
+
+    function _buildOwnerAttribute(address ownerAddress) private pure returns (string memory) {
+        return string(
+            abi.encodePacked(
+                "{", '"trait_type": "Owner",', '"value": "', Strings.toHexString(uint160(ownerAddress), 20), '"},'
+            )
+        );
     }
 
     function _buildStartDateAttribute(uint256 startDate) private pure returns (string memory) {
@@ -299,6 +310,19 @@ contract SilverBet is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable, Reent
                 '"display_type": "date",',
                 '"value": ',
                 Strings.toString(startDate),
+                "},"
+            )
+        );
+    }
+
+    function _buildEndDateAttribute(uint256 endDate) private pure returns (string memory) {
+        return string(
+            abi.encodePacked(
+                "{",
+                '"trait_type": "End date",',
+                '"display_type": "date",',
+                '"value": ',
+                Strings.toString(endDate),
                 "},"
             )
         );

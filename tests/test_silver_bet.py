@@ -222,6 +222,8 @@ def test_create_bet_participate_and_collect_winnings(silver_bet, fee, sender, ac
     for account in accounts:
         initial_balances[str(account)] = account.balance
 
+    print(silver_bet.tokenURI(id))
+
     silver_bet.closeBet(id, winner_option, sender=sender)
 
     for bet in bets:
@@ -266,15 +268,19 @@ def test_owner_can_collect_fees(silver_bet, sender, fee):
     assert initial_balance < sender.balance
 
 
-def test_create_bet_token_uri(silver_bet, fee, sender):
+def test_create_bet_token_uri(silver_bet, fee, accounts):
     """
     Prueba que solo el propietario de la apuesta pueda cerrarla.
     """
-    title = "A vs B"
-    description = "Simple partido de A vs B"
-    options = ["A", "B"]
-    min_bet = int(0.00025e18)
-
-    silver_bet.createBet(title, description, min_bet, options, sender=sender, value=fee)
     id = 0
-    print(silver_bet.tokenURI(id))
+    for account in accounts:
+        title = "A vs B"
+        description = "Simple partido de A vs B"
+        options = ["A", "B"]
+        min_bet = int(0.00025e18)
+
+        silver_bet.createBet(
+            title, description, min_bet, options, sender=account, value=fee
+        )
+        print(silver_bet.tokenURI(id))
+        id += 1
