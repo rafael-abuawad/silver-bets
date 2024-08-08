@@ -264,3 +264,17 @@ def test_owner_can_collect_fees(silver_bet, sender, fee):
     initial_balance = sender.balance
     silver_bet.collectFees(sender, sender=sender)
     assert initial_balance < sender.balance
+
+
+def test_create_bet_token_uri(silver_bet, fee, sender):
+    """
+    Prueba que solo el propietario de la apuesta pueda cerrarla.
+    """
+    title = "A vs B"
+    description = "Simple partido de A vs B"
+    options = ["A", "B"]
+    min_bet = int(0.00025e18)
+
+    silver_bet.createBet(title, description, min_bet, options, sender=sender, value=fee)
+    id = 0
+    print(silver_bet.tokenURI(id))

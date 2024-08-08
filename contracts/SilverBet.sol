@@ -8,6 +8,7 @@ import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/utils/Base64.sol";
 
 /**
  * @title SilverBet
@@ -74,6 +75,9 @@ contract SilverBet is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable, Reent
     // Mapeo del ID del token a las apuestas realizadas
     mapping(uint256 => Bet[]) private _tokenIdToBets;
 
+    // Mapeo del ID del token a la imagen de portada
+    mapping(uint256 => string) private _tokenIdToImage;
+
     event BetResolved(uint256 tokenId, Option winnerOption); // Evento emitido cuando se resuelve una apuesta
 
     /**
@@ -133,6 +137,15 @@ contract SilverBet is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable, Reent
     }
 
     /**
+     * @dev Función interna para establecer la información de un token.
+     * @param tokenId ID del token.
+     * @param imageURL URL de la imagen que se quiere usar para la apuesta.
+     */
+    function _setTokenImage(uint256 tokenId, string memory imageURL) private {
+        _tokenIdToImage[tokenId] = imageURL;
+    }
+
+    /**
      * @dev Función para crear una nueva apuesta.
      * @param title Título de la apuesta.
      * @param description Descripción de la apuesta.
@@ -152,6 +165,7 @@ contract SilverBet is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable, Reent
         uint256 tokenId = _nextTokenId++;
         _safeMint(msg.sender, tokenId);
         _setTokenURI(tokenId, "");
+        _setTokenImage(tokenId, "demo.png"); // TODO: add image support
         _setTokenInfo(tokenId, title, description, minimumBet, options);
         return tokenId;
     }
@@ -240,8 +254,58 @@ contract SilverBet is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable, Reent
     }
 
     function tokenURI(uint256 tokenId) public view override(ERC721, ERC721URIStorage) returns (string memory) {
-        string memory base = _baseURI();
-        return string.concat(base, Strings.toString(tokenId));
+        BetInformation memory info = _tokenIdToInfo[tokenId];
+        string memory tokenImage = _tokenIdToImage[tokenId];
+        string memory jsonString = _buildJSONString(tokenImage, info, _tokenIdToBets[tokenId].length);
+        return string(abi.encodePacked("data:application/json;base64,", Base64.encode(bytes(jsonString))));
+    }
+
+    function _buildJSONString(string memory tokenImage, BetInformation memory info, uint256 betCount)
+        private
+        pure
+        returns (string memory)
+    {
+        return string(
+            abi.encodePacked(
+                "{",
+                '"name": "',
+                info.title,
+                '",',
+                '"description": "',
+                info.description,
+                '",',
+                '"image": "',
+                tokenImage,
+                '",',
+                '"attributes": [',
+                _buildTVLAttribute(info.balance),
+                _buildStartDateAttribute(info.startDate),
+                _buildBettorsAttribute(betCount),
+                "]",
+                "}"
+            )
+        );
+    }
+
+    function _buildTVLAttribute(uint256 balance) private pure returns (string memory) {
+        return string(abi.encodePacked("{", '"trait_type": "TVL",', '"value": ', Strings.toString(balance), "},"));
+    }
+
+    function _buildStartDateAttribute(uint256 startDate) private pure returns (string memory) {
+        return string(
+            abi.encodePacked(
+                "{",
+                '"trait_type": "Start date",',
+                '"display_type": "date",',
+                '"value": ',
+                Strings.toString(startDate),
+                "},"
+            )
+        );
+    }
+
+    function _buildBettorsAttribute(uint256 betCount) private pure returns (string memory) {
+        return string(abi.encodePacked("{", '"trait_type": "Bettors",', '"value": ', Strings.toString(betCount), "}"));
     }
 
     // Funciones getter
