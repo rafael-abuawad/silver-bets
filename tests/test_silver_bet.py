@@ -121,7 +121,11 @@ def test_create_bet_and_players_enter(silver_bet, fee, sender, accounts):
     bets = []
     total_bet_balance = 0
 
-    for account in accounts[1:]:
+    for account in accounts:
+        # Truco para quitar la direccion del sender en Anvil
+        if sender == account:
+            continue
+
         option = random.randint(0, 1)
         bet_amount = random.randint(min_bet, min_bet * 10)
         silver_bet.enterBet(id, option, sender=account, value=bet_amount)
@@ -157,7 +161,11 @@ def test_create_bet_participate_and_only_owner_can_end_it(
     bets = []
     total_bet_balance = 0
 
-    for account in accounts[1:]:
+    for account in accounts:
+        # Truco para quitar la direccion del sender en Anvil
+        if sender == account:
+            continue
+
         option = random.randint(0, 1)
         bet_amount = random.randint(min_bet, min_bet * 10)
         silver_bet.enterBet(id, option, sender=account, value=bet_amount)
@@ -165,7 +173,12 @@ def test_create_bet_participate_and_only_owner_can_end_it(
         bets.append({"bettor": account, "amount": bet_amount, "option": option})
         total_bet_balance += bet_amount
 
-    for account in accounts[1:]:
+    assert silver_bet.getOwner(id) == sender
+    for account in accounts:
+        # Truco para quitar la direccion del sender en Anvil
+        if sender == account:
+            continue
+
         with ape.reverts():
             winner_option = random.randint(0, 1)
             silver_bet.closeBet(id, winner_option, sender=account)
@@ -192,7 +205,11 @@ def test_create_bet_participate_and_collect_winnings(silver_bet, fee, sender, ac
     bets = []
     total_bet_balance = 0
 
-    for account in accounts[1:]:
+    for account in accounts:
+        # Truco para quitar la direccion del sender en Anvil
+        if sender == account:
+            continue
+        
         option = random.randint(0, 1)
         bet_amount = random.randint(min_bet, min_bet * 10)
         silver_bet.enterBet(id, option, sender=account, value=bet_amount)
@@ -203,9 +220,8 @@ def test_create_bet_participate_and_collect_winnings(silver_bet, fee, sender, ac
     winner_option = random.randint(0, 1)
 
     initial_balances = {}
-    for bet in bets:
-        bettor = bet.get("bettor")
-        initial_balances[str(bettor)] = bettor.balance
+    for account in accounts:
+        initial_balances[str(account)] = account.balance
 
     silver_bet.closeBet(id, winner_option, sender=sender)
 
@@ -227,7 +243,11 @@ def test_only_owner_can_collect_fees(silver_bet, sender, fee, accounts):
     min_bet = int(0.00025e18)
     silver_bet.createBet(title, description, min_bet, options, sender=sender, value=fee)
 
-    for account in accounts[1:]:
+    for account in accounts:
+        # Truco para quitar la direccion del sender en Anvil
+        if sender == account:
+            continue
+
         with ape.reverts():
             silver_bet.collectFees(account, sender=account)
 
