@@ -141,9 +141,20 @@ contract SilverBet is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable, Reent
      * @param tokenId ID del token asociado a la nueva apuesta.
      */
     function _setTokenImage(uint256 tokenId) private {
-        // Imagenes disponibles para usar
-        string[12] memory images =
-            ["a.png", "b.png", "c.png", "d.png", "e.png", "f.png", "g.png", "h.png", "i.png", "j.png", "k.png", "l.png"];
+        string[12] memory images = [
+            "ipfs://QmT288DEAtEbtegcvChzhdYZ1ADSeT6yBCf7oihsiDN7Nu",
+            "ipfs://Qmf21h2UV356dZFoyGvBRdtR7M8HFbfHbMZ2C2hrZzD4YK",
+            "ipfs://QmY4jqGASdxh4JQpSaqgBckjWARYSJCBa638pGcnj6fozF",
+            "ipfs://QmbUWo1LZRhK2Yc4UHQRKvnUVvESUdqqSFJAYDcTfJveZt",
+            "ipfs://QmQ2qmaCm99nVT718B7hgb5eDQ1o2QmSKX1zJ99wpUGLXQ",
+            "ipfs://QmdZHRXbayYcj7vukYUNakK9MUmKMD2rLmj1MgLrt2fEpC",
+            "ipfs://QmVQeTT9ynSf1xQ7uhFsfyuwGcPYnqXwp2qxKJCPzw5Nci",
+            "ipfs://QmQbovLGyvEZqUa5kqVDQCGhWsyNs8w3Q2JcnkLNxWfkJ2",
+            "ipfs://QmVQj9M2qA7rob7rPcVP4uzqpq5HUMctrn7H9gWySJHV4T",
+            "ipfs://QmeokY4SfwNtDMUcT9VZG5ngodj3GekAb6uEvXh8jgo621",
+            "ipfs://QmRbrfpzPvCxoN2Xf7zt7oxL7gTUYaVtPEo6GDmdPaWegM",
+            "ipfs://QmQQaQ3HhCckeusSwREWUAx6tBgGc8759s3uRHyA5geWWL"
+        ];
         _tokenIdToImage[tokenId] = images[tokenId % images.length];
     }
 
@@ -278,7 +289,7 @@ contract SilverBet is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable, Reent
                 '"image": "',
                 tokenImage,
                 '",',
-                '"background_color": "030712",'
+                '"background_color": "030712",',
                 '"attributes": [',
                 _buildTVLAttribute(info.balance),
                 _buildOwnerAttribute(info.owner),
@@ -292,7 +303,11 @@ contract SilverBet is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable, Reent
     }
 
     function _buildTVLAttribute(uint256 balance) private pure returns (string memory) {
-        return string(abi.encodePacked("{", '"trait_type": "Total Value Locked (TVL)",', '"value": ', Strings.toString(balance), "},"));
+        return string(
+            abi.encodePacked(
+                "{", '"trait_type": "Total Value Locked (TVL)",', '"value": ', Strings.toString(balance), "},"
+            )
+        );
     }
 
     function _buildOwnerAttribute(address ownerAddress) private pure returns (string memory) {
