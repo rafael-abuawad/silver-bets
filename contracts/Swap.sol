@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
-import "@uniswap/contracts/interfaces/IUniswapV3Factory.sol";
+import "@uniswap/v3-core/contracts/interfaces/IUniswapV3Factory.sol";
+import "@uniswap/v3-periphery/contracts/interfaces/ISwapRouter.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "./interfaces/ISwapRouter02.sol";
 
 contract Swap is Ownable {
-    ISwapRouter02 immutable router;
+    ISwapRouter immutable router;
     IUniswapV3Factory immutable uniswapFactory;
 
     address constant WAVAX = 0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7;
@@ -16,7 +16,7 @@ contract Swap is Ownable {
     constructor(address swapRouterAddress, address uniswapFactoryAddress) Ownable(msg.sender) {
         // swapRouterAddress = 0xbb00FF08d01D300023C629E8fFfFcb65A5a578cE
         // uniswapFactoryAddress = 0x33128a8fC17869897dcE68Ed026d694621f6FDfD
-        router = ISwapRouter02(swapRouterAddress);
+        router = ISwapRouter(swapRouterAddress);
         uniswapFactory = IUniswapV3Factory(uniswapFactoryAddress);
     }
 
@@ -37,11 +37,12 @@ contract Swap is Ownable {
 
         if (checkPoolExists(address(tokenIn), address(tokenOut))) {
             // Swap directo entre tokenIn y tokenOut
-            ISwapRouter02.ExactInputSingleParams memory params = ISwapRouter02.ExactInputSingleParams({
+            ISwapRouter.ExactInputSingleParams memory params = ISwapRouter.ExactInputSingleParams({
                 tokenIn: address(tokenIn),
                 tokenOut: address(tokenOut),
                 fee: POOL_FEE,
                 recipient: msg.sender,
+                deadline: block.timestamp,
                 amountIn: swapAmount,
                 amountOutMinimum: amountOutMin,
                 sqrtPriceLimitX96: 0
@@ -49,11 +50,12 @@ contract Swap is Ownable {
             amountOut = router.exactInputSingle(params);
         } else {
             // Swap from tokenIn to WAVAX, then WAVAX to tokenOut
-            ISwapRouter02.ExactInputSingleParams memory params1 = ISwapRouter02.ExactInputSingleParams({
+            ISwapRouter.ExactInputSingleParams memory params1 = ISwapRouter.ExactInputSingleParams({
                 tokenIn: address(tokenIn),
                 tokenOut: WAVAX,
                 fee: POOL_FEE,
                 recipient: address(this),
+                deadline: block.timestamp,
                 amountIn: swapAmount,
                 amountOutMinimum: 0,
                 sqrtPriceLimitX96: 0
@@ -62,11 +64,12 @@ contract Swap is Ownable {
 
             IERC20(WAVAX).approve(address(router), WAVAXReceived);
 
-            ISwapRouter02.ExactInputSingleParams memory params2 = ISwapRouter02.ExactInputSingleParams({
+            ISwapRouter.ExactInputSingleParams memory params2 = ISwapRouter.ExactInputSingleParams({
                 tokenIn: WAVAX,
                 tokenOut: address(tokenOut),
                 fee: POOL_FEE,
                 recipient: msg.sender,
+                deadline: block.timestamp,
                 amountIn: WAVAXReceived,
                 amountOutMinimum: amountOutMin,
                 sqrtPriceLimitX96: 0

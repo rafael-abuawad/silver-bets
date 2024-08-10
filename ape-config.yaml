@@ -9,6 +9,14 @@ dependencies:
   - name: openzeppelin
     github: OpenZeppelin/openzeppelin-contracts
     version: 5.0.2
-  - name: uniswap
+  - name: v3-periphery
+    github: Uniswap/v3-periphery
+    ref: v1.3.0
+  - name: v3-core
     github: Uniswap/v3-core
     ref: v1.0.0
+  
+solidity:
+  import_remapping:
+    - "@uniswap/v3-periphery=v3-periphery"
+    - "@uniswap/v3-core=v3-core"
