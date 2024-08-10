@@ -30,5 +30,5 @@ def token_images():
         "ipfs://QmVQj9M2qA7rob7rPcVP4uzqpq5HUMctrn7H9gWySJHV4T",
         "ipfs://QmeokY4SfwNtDMUcT9VZG5ngodj3GekAb6uEvXh8jgo621",
         "ipfs://QmRbrfpzPvCxoN2Xf7zt7oxL7gTUYaVtPEo6GDmdPaWegM",
-        "ipfs://QmQQaQ3HhCckeusSwREWUAx6tBgGc8759s3uRHyA5geWWL"
+        "ipfs://QmQQaQ3HhCckeusSwREWUAx6tBgGc8759s3uRHyA5geWWL",
     ]
