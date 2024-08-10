@@ -9,3 +9,6 @@ dependencies:
   - name: openzeppelin
     github: OpenZeppelin/openzeppelin-contracts
     version: 5.0.2
+  - name: uniswap
+    github: Uniswap/v3-core
+    ref: v1.0.0
