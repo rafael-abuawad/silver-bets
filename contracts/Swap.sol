@@ -10,12 +10,13 @@ contract Swap is Ownable {
     ISwapRouter immutable router;
     IUniswapV3Factory immutable uniswapFactory;
 
-    address constant WAVAX = 0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7;
+    address immutable WAVAX;
     uint24 constant POOL_FEE = 3000;
 
-    constructor(address swapRouterAddress, address uniswapFactoryAddress) Ownable(msg.sender) {
+    constructor(address swapRouterAddress, address uniswapFactoryAddress, address wavax) Ownable(msg.sender) {
         // swapRouterAddress = 0xbb00FF08d01D300023C629E8fFfFcb65A5a578cE
         // uniswapFactoryAddress = 0x33128a8fC17869897dcE68Ed026d694621f6FDfD
+        WAVAX = wavax;
         router = ISwapRouter(swapRouterAddress);
         uniswapFactory = IUniswapV3Factory(uniswapFactoryAddress);
     }
