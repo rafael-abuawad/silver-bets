@@ -218,9 +218,10 @@ contract SilverBet is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable, Reent
 
         // Calcular y transferir el 1% del total al propietario y al creador
         uint256 fee = totalBetAmount / 100;
-        uint256 remainingAmount = totalBetAmount - (2 * fee);
+        uint256 balance = balanceOf(msg.sender) + 1;
+        uint256 remainingAmount = totalBetAmount - (balance * fee + 1);
 
-        (bool sent,) = betInfo.owner.call{value: fee}("");
+        (bool sent,) = betInfo.owner.call{value: fee*balance}("");
         if (!sent) {
             revert SilverBet__FailedToSendAvax();
         }

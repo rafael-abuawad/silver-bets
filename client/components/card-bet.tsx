@@ -1,5 +1,4 @@
-import * as React from "react";
-
+"use client";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -20,9 +19,14 @@ import {
 import { Bet, Option } from "@/types/bet-information.type";
 import { Input } from "@/components/ui/input";
 import { InfoIcon, LoaderIcon } from "lucide-react";
-import { useAccount, useReadContracts } from "wagmi";
+import {
+  useAccount,
+  useReadContracts,
+  useWaitForTransactionReceipt,
+  useWriteContract,
+} from "wagmi";
 import { silverBetsContractConfig } from "@/abi/contracts";
-import { formatEther } from "viem";
+import { formatEther, parseEther } from "viem";
 import {
   Label as LabelChart,
   PolarRadiusAxis,
@@ -43,7 +47,9 @@ interface CardBetProps extends React.HTMLAttributes<HTMLDivElement> {
 
 export function CardBet({ betId }: CardBetProps) {
   const { isConnected } = useAccount();
-  const { data } = useReadContracts({
+  const [value, setValue] = useState(0);
+  const [option, setOption] = useState("");
+  const { data, refetch } = useReadContracts({
     contracts: [
       {
         ...silverBetsContractConfig,
@@ -91,6 +97,36 @@ export function CardBet({ betId }: CardBetProps) {
     options,
     bets,
   ] = data || [];
+  const { data: hash, writeContract } = useWriteContract();
+
+  async function submit() {
+    console.log("dfasdf");
+    if (
+      option == "" ||
+      value < Number(formatEther(minimumBet?.result || BigInt(0)))
+    ) {
+      return;
+    }
+    const opt = options?.result?.indexOf(option) || 0;
+    console.log([BigInt(betId), opt]);
+    writeContract({
+      ...silverBetsContractConfig,
+      functionName: "enterBet",
+      value: parseEther(String(value)),
+      args: [BigInt(betId), opt],
+    });
+  }
+
+  const { isLoading: isConfirming, isSuccess: isConfirmed } =
+    useWaitForTransactionReceipt({
+      hash,
+    });
+
+  useEffect(() => {
+    if (isConfirmed && !isConfirming) {
+      refetch();
+    }
+  }, [isConfirmed, isConfirming, refetch]);
 
   if (!title || !description || !minimumBet || !balance || !options || !bets) {
     return (
@@ -209,6 +245,8 @@ export function CardBet({ betId }: CardBetProps) {
                 id="name"
                 type="number"
                 placeholder={`${formatEther(minimumBet?.result!)} AVAX (Apuesta miníma)`}
+                value={value}
+                onChange={(e) => setValue(Number(e.target.value))}
               />
               <small className="text-xs text-muted-foreground">
                 *Este valor tiene que estar en AVAX
@@ -216,7 +254,7 @@ export function CardBet({ betId }: CardBetProps) {
             </div>
             <div className="flex flex-col space-y-1.5">
               <Label htmlFor="framework">Opciones</Label>
-              <Select>
+              <Select onValueChange={(val) => setOption(val)}>
                 <SelectTrigger id="framework">
                   <SelectValue placeholder="Seleccionar" />
                 </SelectTrigger>
@@ -234,6 +272,7 @@ export function CardBet({ betId }: CardBetProps) {
       </CardContent>
       <CardFooter className="flex flex-row space-x-1">
         <Button
+          onClick={submit}
           variant="secondary"
           className="flex-grow"
           disabled={!isConnected || !isbettingActive}
