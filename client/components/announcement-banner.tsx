@@ -2,7 +2,7 @@ import React from "react";
 
 export default function AnnouncementBanner() {
   return (
-    <div className="bg-gradient-to-r from-rose-600 to-red-400">
+    <div className="bg-gradient-to-r from-[#DA22FF] to-[#9733EE]">
       <div className="max-w-[85rem] px-4 py-4 sm:px-6 lg:px-8 mx-auto">
         <div className="grid md:grid-cols-2 justify-between md:items-center gap-2">
           <div className="text-start">

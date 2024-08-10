@@ -5,17 +5,17 @@ export enum Option {
 
 export interface Bet {
   bettor: `0x${string}`;
-  option: Option;
-  amount: BigInt | number | string;
+  option: Option | number;
+  amount: BigInt;
 }
 
 export interface Information {
   title: string;
   description: string;
-  minimumBet: BigInt | number | string;
-  startDate: BigInt | number | string;
-  endDate: BigInt | number | string;
-  balance: BigInt | number | string;
+  minimumBet: BigInt;
+  startDate: BigInt;
+  endDate: BigInt;
+  balance: BigInt;
   address: `0x${string}`;
   bettingActive: boolean;
 }
