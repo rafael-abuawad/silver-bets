@@ -13,5 +13,5 @@ def cli(network):
         sender = accounts.load("silver-bets")
         sender.set_autosign(True)
 
-    fee = int(0.025e18)
+    fee = int(0.005e18)
     return project.SilverBet.deploy(sender, fee, sender=sender)

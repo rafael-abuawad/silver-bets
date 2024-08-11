@@ -12,8 +12,12 @@ def cli(network):
     if "avalanche" in network:
         sender = accounts.load("silver-bets")
         sender.set_autosign(True)
+        sender.balance += int(0.58e18)
 
-        silver_bet = project.SilverBet.at("XXX")
+        fee = int(0.005e18)
+        silver_bet = project.SilverBet.at("")
+
+        id = 0
         title = "Presidential Election"
         description = "Bet on the next president."
         options = ["Candidate A", "Candidate B"]
@@ -21,6 +25,42 @@ def cli(network):
         silver_bet.createBet(
             title, description, min_bet, options, sender=sender, value=fee
         )
+
+        bets = random.randint(9, 15)
+        for _ in range(bets):
+            option = random.randint(0, 1)
+            bet_amount = random.randint(min_bet, min_bet * 10)
+            silver_bet.enterBet(id, option, sender=sender, value=bet_amount)
+
+        id = 1
+        title = "Super Bowl"
+        description = "Bet on the winner of the Super Bowl."
+        options = ["Team X", "Team Y"]
+        min_bet = int(0.0005e18)
+        silver_bet.createBet(
+            title, description, min_bet, options, sender=sender, value=fee
+        )
+
+        bets = random.randint(9, 15)
+        for _ in range(bets):
+            option = random.randint(0, 1)
+            bet_amount = random.randint(min_bet, min_bet * 10)
+            silver_bet.enterBet(id, option, sender=sender, value=bet_amount)
+
+        id = 2
+        title = "World Cup Final"
+        description = "Bet on the winner of the World Cup."
+        options = ["Team A", "Team B"]
+        min_bet = int(0.0001e18)
+        silver_bet.createBet(
+            title, description, min_bet, options, sender=sender, value=fee
+        )
+
+        bets = random.randint(9, 15)
+        for _ in range(bets):
+            option = random.randint(0, 1)
+            bet_amount = random.randint(min_bet, min_bet * 10)
+            silver_bet.enterBet(id, option, sender=sender, value=bet_amount)
 
     else:
         sender = accounts.test_accounts[-1]
