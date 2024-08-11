@@ -3,6 +3,8 @@
 import { ConnectKitButton } from "connectkit";
 import { ModeToggle } from "./mode-toggle";
 import React from "react";
+import { Button } from "./ui/button";
+import Link from "next/link";
 
 function Navbar() {
   return (
@@ -13,6 +15,9 @@ function Navbar() {
             <h2>Silver Bets</h2>
           </div>
           <div className="flex flex-row space-x-3">
+            <Button variant="ghost" asChild>
+              <Link href="/create">Crear</Link>
+            </Button>
             <ConnectKitButton></ConnectKitButton>
             <ModeToggle></ModeToggle>
           </div>

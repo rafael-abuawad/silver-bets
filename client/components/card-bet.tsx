@@ -99,6 +99,13 @@ export function CardBet({ betId }: CardBetProps) {
   ] = data || [];
   const { data: hash, writeContract } = useWriteContract();
 
+  function truncateText(text: string, maxLength: number): string {
+    if (text.length <= maxLength) {
+      return text;
+    }
+    return text.slice(0, maxLength) + "...";
+  }
+
   async function submit() {
     console.log("dfasdf");
     if (
@@ -170,7 +177,9 @@ export function CardBet({ betId }: CardBetProps) {
     <Card className="w-full">
       <CardHeader className="items-center pb-0">
         <CardTitle>{title?.result}</CardTitle>
-        <CardDescription>{description?.result}</CardDescription>
+        <CardDescription>
+          {truncateText(description?.result!, 26)}
+        </CardDescription>
       </CardHeader>
       <CardContent>
         <ChartContainer

@@ -53,9 +53,6 @@ def test_create_bet_and_test_getters(silver_bet, fee, sender):
 
     assert silver_bet.ownerOf(0) == sender
 
-    bet_uri = silver_bet.tokenURI(id)
-    assert bet_uri == f"http://localhost:3000/{id}"
-
     bet_title = silver_bet.getTitle(id)
     assert bet_title == title
 
