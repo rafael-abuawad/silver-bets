@@ -12,10 +12,9 @@ def cli(network):
     if "avalanche" in network:
         sender = accounts.load("silver-bets")
         sender.set_autosign(True)
-        sender.balance += int(0.58e18)
 
         fee = int(0.005e18)
-        silver_bet = project.SilverBet.at("")
+        silver_bet = project.SilverBet.at("0x28290176d985389d10FE225470A3f3a0e1A5b82a")
 
         id = 0
         title = "Presidential Election"
