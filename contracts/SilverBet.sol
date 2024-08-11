@@ -141,19 +141,12 @@ contract SilverBet is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable, Reent
      * @param tokenId ID del token asociado a la nueva apuesta.
      */
     function _setTokenImage(uint256 tokenId) private {
-        string[12] memory images = [
+        string[5] memory images = [
             "ipfs://QmT288DEAtEbtegcvChzhdYZ1ADSeT6yBCf7oihsiDN7Nu",
             "ipfs://Qmf21h2UV356dZFoyGvBRdtR7M8HFbfHbMZ2C2hrZzD4YK",
             "ipfs://QmY4jqGASdxh4JQpSaqgBckjWARYSJCBa638pGcnj6fozF",
             "ipfs://QmbUWo1LZRhK2Yc4UHQRKvnUVvESUdqqSFJAYDcTfJveZt",
-            "ipfs://QmQ2qmaCm99nVT718B7hgb5eDQ1o2QmSKX1zJ99wpUGLXQ",
-            "ipfs://QmdZHRXbayYcj7vukYUNakK9MUmKMD2rLmj1MgLrt2fEpC",
-            "ipfs://QmVQeTT9ynSf1xQ7uhFsfyuwGcPYnqXwp2qxKJCPzw5Nci",
-            "ipfs://QmQbovLGyvEZqUa5kqVDQCGhWsyNs8w3Q2JcnkLNxWfkJ2",
-            "ipfs://QmVQj9M2qA7rob7rPcVP4uzqpq5HUMctrn7H9gWySJHV4T",
-            "ipfs://QmeokY4SfwNtDMUcT9VZG5ngodj3GekAb6uEvXh8jgo621",
-            "ipfs://QmRbrfpzPvCxoN2Xf7zt7oxL7gTUYaVtPEo6GDmdPaWegM",
-            "ipfs://QmQQaQ3HhCckeusSwREWUAx6tBgGc8759s3uRHyA5geWWL"
+            "ipfs://QmQ2qmaCm99nVT718B7hgb5eDQ1o2QmSKX1zJ99wpUGLXQ"
         ];
         _tokenIdToImage[tokenId] = images[tokenId % images.length];
     }
@@ -409,7 +402,7 @@ contract SilverBet is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable, Reent
      * @param _to Dirección a la que se enviarán los fondos.
      */
     function collectFees(address payable _to) public payable onlyOwner {
-        (bool sent, bytes memory data) = _to.call{value: address(this).balance}("");
+        (bool sent,) = _to.call{value: address(this).balance}("");
         if (!sent) {
             revert SilverBet__FailedToSendAvax();
         }

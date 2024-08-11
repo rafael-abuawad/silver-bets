@@ -1,7 +1,7 @@
 "use client";
 
 import { WagmiProvider, createConfig } from "wagmi";
-import { anvil, avalanche } from "wagmi/chains";
+import { avalanche } from "wagmi/chains";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ConnectKitProvider, getDefaultConfig } from "connectkit";
 
@@ -11,7 +11,7 @@ const config = createConfig(
     ssr: true,
 
     // Your dApps chains
-    chains: [anvil],
+    chains: [avalanche],
 
     // Required API Keys
     walletConnectProjectId: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID!,

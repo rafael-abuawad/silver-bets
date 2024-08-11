@@ -20,3 +20,8 @@ solidity:
   import_remapping:
     - "@uniswap/v3-periphery=v3-periphery"
     - "@uniswap/v3-core=v3-core"
+
+node:
+  avalanche:
+    mainnet:
+      uri: https://api.avax.network/ext/bc/C/rpc

@@ -1,5 +1,5 @@
 export const silverBetsContractConfig = {
-  address: "0xaCEefB5321ba266D61Fa556A2941D6C5fAC8637D",
+  address: "0x28290176d985389d10FE225470A3f3a0e1A5b82a",
   abi: [
     {
       inputs: [
